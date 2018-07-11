@@ -113,6 +113,7 @@ app.post("/subscribe/new", (req, res) => {
     }
 });
 
+
 //admin post request
 app.post("/admin/new", (req, res) => {
     
@@ -163,15 +164,17 @@ app.post("/admin/new", (req, res) => {
 app.post("/activity/new", (req, res) => {
     
     res.setHeader('Content-Type', 'application/json');
+    var auth = " ";
 
+    console.log(req);
     var requestData = {
-        adminId:                  req.body.adminId,
-        activityDescription:      req.body.actText,
-        activityPhoto:            req.body.acPhoto,
-        activityGuiDisplayedDate: req.body.acDdate,
+        adminId                 : req.body.adminId,
+        activityDescription     : req.body.actText,
+        activityPhoto           : req.body.acPhoto,
+        activityGuiDisplayedDate: req.body.acDdate
     }
 
-      if(req.body.key==pw){
+      if(req.body.key!==pw){
           var query = "insert into atl_church_home_christian_activity (adminId, activityDescription, activityPhoto, activityGuiDisplayedDate) values ?";
     
           var values = 
@@ -201,6 +204,103 @@ app.post("/activity/new", (req, res) => {
       res.send(JSON.stringify({"status": 401, "statusText": "Unauthorized", "error": "invalid key request"}));
     }
 });
+
+
+//home page our christian main qoutes post request
+app.post("/quote/new", (req, res) => {
+    
+    res.setHeader('Content-Type', 'application/json');
+
+    var requestData = {
+        adminId:                 req.body.adminId,
+        quoteTitle:              req.body.quoteTitle,
+        quoteMessageDescription: req.body.quoteMessageDescription,
+        quoteVerse:              req.body.quoteVerse,
+        quoteMessageDbDate:      req.body.quoteMessageDbDate
+    }
+
+      if(req.body.key==pw){
+          var query = "insert into atl_church_home_quote (adminId, quoteTitle, quoteMessageDescription, quoteVerse, quoteMessageDbDate) values ?";
+    
+          var values = 
+          [
+             [requestData.adminId, requestData.quoteTitle, requestData.quoteMessageDescription, requestData.quoteVerse, requestData.quoteMessageDbDate]
+          ];
+
+          con.query(query, [values], (error, results, fields) => {
+              if(error){
+                    console.log("error: "+error)
+                    res.send(JSON.stringify({"status": 500, "error": "insert is null", "event": null})); 
+                  //If there is error, we send the error in the error section with 500 status
+            }else{
+                   res.send(JSON.stringify({
+                    "status": 200, 
+                    "error": null, 
+                    "message": requestData.activityDescription + " inserted in db",
+                    "error": null,                    
+                    "event": results
+                  }));
+                 //If there is no error, all is good and response is 200OK.
+                 }
+             });        
+           }
+     else{
+      console.log("invalid key request " + req.body.key);
+      res.send(JSON.stringify({"status": 401, "statusText": "Unauthorized", "error": "invalid key request"}));
+    }
+});
+
+
+//home page our christian main news post request
+app.post("/news/new", (req, res) => {
+    
+    res.setHeader('Content-Type', 'application/json');
+
+    var requestData = {
+        adminId:              req.body.adminId,
+        newsTitle:            req.body.newsTitle,
+        newsDescription:      req.body.newsDescription,
+        newsPhoto:            req.body.newsPhoto,
+        newsGuiDisplayedDate: req.body.newsGuiDisplayedDate,
+        newsDbDate:           req.body.newsDbDate
+    }
+
+      if(req.body.key==pw){
+          var query = "insert into atl_church_news (adminId, newsTitle, newsDescription, newsPhoto, newsGuiDisplayedDate, newsDbDate) values ?";
+    
+          var values = 
+          [
+             [requestData.adminId, requestData.newsTitle, requestData.newsDescription, requestData.newsPhoto, requestData.newsGuiDisplayedDate, requestData.newsDbDate,]
+          ];
+
+          con.query(query, [values], (error, results, fields) => {
+              if(error){
+                    console.log("error: "+error)
+                    res.send(JSON.stringify({"status": 500, "error": "insert is null", "event": null})); 
+                  //If there is error, we send the error in the error section with 500 status
+            }else{
+                   res.send(JSON.stringify({
+                    "status": 200, 
+                    "error": null, 
+                    "message": requestData.newsTitle + " inserted in db",
+                    "error": null,                    
+                    "event": results
+                  }));
+                 //If there is no error, all is good and response is 200OK.
+                 }
+             });        
+           }
+     else{
+      console.log("invalid key request " + req.body.key);
+      res.send(JSON.stringify({"status": 401, "statusText": "Unauthorized", "error": "invalid key request"}));
+    }
+});
+
+
+
+
+
+
 
 //tell express what to do when the /about route is requested
 app.post('/form', function(req, res){
